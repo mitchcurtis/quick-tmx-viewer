@@ -1,0 +1,3 @@
+[submodule "3rdparty/tiled"]
+	path = 3rdparty/tiled
+	url = git@github.com:bjorn/tiled.git
