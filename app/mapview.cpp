@@ -39,11 +39,22 @@ void MapView::loadMap()
 
     Tiled::TilesetManager::instance()->addReferences(map->tilesets());
 
+    if (map->orientation() == Tiled::Map::Orientation) {
+        createIsometricItems();
+    } else {
+        qDebug() << "Only isometric maps are currently supported";
+    }
+}
+
+void MapView::createIsometricItems()
+{
     for (int layerIndex = 0; layerIndex < map->layerCount(); ++layerIndex) {
         Tiled::Layer *layer = map->layerAt(layerIndex);
         // TODO: draw other stuff
         Tiled::TileLayer *tileLayer = layer->asTileLayer();
 
+        const int startX = (tileLayer->bounds().width() * map->tileWidth()) / 2;
+        const int startY = 0;
         for (int y = 0; y < tileLayer->bounds().height(); ++y) {
             for (int x = 0; x < tileLayer->bounds().width(); ++x) {
                 const Tiled::Cell cell = tileLayer->cellAt(x, y);
@@ -51,9 +62,9 @@ void MapView::loadMap()
                 if (tileItem) {
                     QString source = QString::fromLatin1("image://tile/%1,%2").arg(cell.tileset()->fileName()).arg(cell.tileId());
                     tileItem->setProperty("source", source);
-                    const int cellX = x * map->tileWidth();
+                    const int cellX = startX + (-y * (map->tileWidth() / 2)) + (x * (map->tileWidth() / 2));
                     tileItem->setX(cellX);
-                    const int cellY = y * map->tileHeight();
+                    const int cellY = startY + (y * (map->tileHeight() / 2)) + (x * (map->tileHeight() / 2));
                     tileItem->setY(cellY);
                     tileItem->setParentItem(this);
                     mTileComponent->completeCreate();
