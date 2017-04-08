@@ -29,6 +29,8 @@ public slots:
 private:
     void loadMap();
 
+    void createIsometricItems();
+
     QUrl mSource;
     QQmlComponent *mTileComponent;
 };
