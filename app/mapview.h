@@ -6,6 +6,10 @@
 
 class QQmlComponent;
 
+namespace Tiled {
+class Map;
+}
+
 class MapView : public QQuickItem
 {
     Q_OBJECT
@@ -33,6 +37,7 @@ private:
 
     QUrl mSource;
     QQmlComponent *mTileComponent;
+    Tiled::Map *mMap;
 };
 
 #endif // MAPVIEW_H
