@@ -1,20 +1,15 @@
 #include <QGuiApplication>
 #include <QQmlApplicationEngine>
 #include <QQmlContext>
-
-#include "mapview.h"
-#include "tileimageprovider.h"
-
+#include <qdebug.h>
 int main(int argc, char *argv[])
 {
     QGuiApplication app(argc, argv);
 
-    qmlRegisterType<MapView>("App", 1, 0, "MapView");
-
     QQmlApplicationEngine engine;
 
-    TileImageProvider *tileImageProvider = new TileImageProvider;
-    engine.addImageProvider(QLatin1String("tile"), tileImageProvider);
+    qDebug() << TILED_QUICK_PLUGIN_BUILD_DIR;
+    engine.addImportPath(TILED_QUICK_PLUGIN_BUILD_DIR);
 
     engine.rootContext()->setContextProperty(QLatin1String("exampleDir"), EXAMPLE_DIR);
 
