@@ -9,8 +9,8 @@ RESOURCES += qml.qrc
 
 DEFINES += QT_DEPRECATED_WARNINGS
 
-#LIBS += -L"$$clean_path($$OUT_PWD/../3rdparty/tiled/lib)" -ltiled
-#INCLUDEPATH += "../3rdparty/tiled/src"
+LIBS += -L"$$clean_path($$OUT_PWD/../3rdparty/tiled/lib)" -ltiled
+INCLUDEPATH += "../3rdparty/tiled/src"
 
 DEFINES += EXAMPLE_DIR=\\\"$$clean_path($$PWD/../3rdparty/tiled/examples)\\\"
 DEFINES += TILED_QUICK_PLUGIN_BUILD_DIR=\\\"$$clean_path($$OUT_PWD/../3rdparty/tiled/qml)\\\"
