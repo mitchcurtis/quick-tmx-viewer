@@ -49,6 +49,15 @@ Window {
                             mapView.width / scale,
                             mapView.height / scale);
                 }
+
+                Rectangle {
+                    id: player
+                    width: 32
+                    height: 32
+                    color: "darkorange"
+                    radius: width / 2
+                    z: 100
+                }
             }
         }
     }
@@ -62,6 +71,14 @@ Window {
             containerAnimation.x += dx
             containerAnimation.y += dy
             containerAnimation.start()
+        }
+
+        onClicked: {
+            var relativeToMapItem = singleFingerPanArea.mapToItem(mapItem, singleFingerPanArea.mouseX, singleFingerPanArea.mouseY)
+            var tileCoords = mapItem.screenToTileCoords(relativeToMapItem.x, relativeToMapItem.y)
+            var pixelCoords = mapItem.tileToScreenCoords(Math.floor(tileCoords.x) + 0.5, Math.floor(tileCoords.y) + 0.5)
+            player.x = pixelCoords.x - player.width / 2
+            player.y = pixelCoords.y - player.height / 2
         }
 
         onWheel: {
