@@ -7,16 +7,21 @@ Window {
     visible: true
     width: 640
     height: 480
-    title: qsTr("Hello World")
+    title: Math.floor(tileCoords.x) + ", " + Math.floor(tileCoords.y)
+
+    readonly property point mapRelativeCoords: singleFingerPanArea.mapToItem(mapItem, singleFingerPanArea.mouseX, singleFingerPanArea.mouseY)
+    readonly property point tileCoords: mapItem.screenToTileCoords(mapRelativeCoords.x, mapRelativeCoords.y)
 
     Tiled.MapLoader {
         id: mapLoader
-        source:  "file:///" + exampleDir + "/isometric_grass_and_water.tmx"
+        source:  "file:///" + tiledExampleDir + "/isometric_grass_and_water.tmx"
+        onErrorChanged: console.warn(error)
     }
 
     Item {
         id: mapView
         anchors.fill: parent
+        anchors.margins: 100
 
         Item {
             id: mapContainer
@@ -62,16 +67,19 @@ Window {
         }
     }
 
+    Rectangle {
+        anchors.fill: mapView
+        color: "tomato"
+        opacity: 0.1
+
+        Text {
+            text: "MapItem visibleArea " + mapItem.visibleArea
+        }
+    }
+
     DragArea {
         id: singleFingerPanArea
         anchors.fill: parent
-
-        onDragged: {
-            containerAnimation.stop()
-            containerAnimation.x += dx
-            containerAnimation.y += dy
-            containerAnimation.start()
-        }
 
         onClicked: {
             var relativeToMapItem = singleFingerPanArea.mapToItem(mapItem, singleFingerPanArea.mouseX, singleFingerPanArea.mouseY)
@@ -79,6 +87,20 @@ Window {
             var pixelCoords = mapItem.tileToScreenCoords(Math.floor(tileCoords.x) + 0.5, Math.floor(tileCoords.y) + 0.5)
             player.x = pixelCoords.x - player.width / 2
             player.y = pixelCoords.y - player.height / 2
+        }
+
+        onDragged: {
+            if (containerAnimation.running) {
+                containerAnimation.stop()
+                containerAnimation.x += dx
+                containerAnimation.y += dy
+                mapContainer.x += dx
+                mapContainer.y += dy
+                containerAnimation.start()
+            } else {
+                mapContainer.x += dx
+                mapContainer.y += dy
+            }
         }
 
         onWheel: {
