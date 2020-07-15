@@ -15,6 +15,7 @@ QtGuiApplication {
         submodules: ["qxcb-egl-integration"]
     }
     Depends { name: "libtiled" }
+    Depends { name: "tiledquickplugin" }
 
     // Additional import path used to resolve QML modules in Qt Creator's code model
     property pathList qmlImportPaths: []
@@ -28,13 +29,17 @@ QtGuiApplication {
         if (windows)
             path = "/../install-root/qml"
         else if (darwin)
-            path = "/../install-root/usr/local/Tiled Quick.app/Contents/qml"
+            path = "/../install-root/usr/local/Tiled Quick.app/Contents/MacOS/qml"
         else
             path = "/../install-root/usr/local/qml"
         return FileInfo.cleanPath(buildDirectory + path)
     }
 
     readonly property string tiledExampleDir: FileInfo.cleanPath(sourceDirectory + "/../3rdparty/tiled/examples")
+
+    cpp.includePaths: [
+        FileInfo.cleanPath(product.sourceDirectory + "/../3rdparty/tiled/src")
+    ]
 
     cpp.useRPaths: darwin || (unix && !Qt.core.staticBuild)
     // Ensure that e.g. libslate is found.
@@ -64,6 +69,10 @@ QtGuiApplication {
 
     files: [
         "main.cpp",
+        "RectSpriteImageProvider.h",
+        "RectSpriteImageProvider.cpp",
+        "TiledMapModel.h",
+        "TiledMapModel.cpp",
         "qml.qrc"
     ]
 

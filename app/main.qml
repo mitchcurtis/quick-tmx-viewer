@@ -3,14 +3,17 @@ import QtQuick.Window 2.2
 
 import org.mapeditor.Tiled 1.0 as Tiled
 
+import App 1.0
+
 Window {
     visible: true
     width: 640
     height: 480
-    title: Math.floor(tileCoords.x) + ", " + Math.floor(tileCoords.y)
+    title: "mapContainer x: " + Math.floor(mapContainer.x) + " y: " + Math.floor(mapContainer.y) + " scale: " + mapContainer.scale
+//        + " click tile pos: " + Math.floor(tileCoords.x) + ", " + Math.floor(tileCoords.y)
 
     readonly property point mapRelativeCoords: singleFingerPanArea.mapToItem(mapItem, singleFingerPanArea.mouseX, singleFingerPanArea.mouseY)
-    readonly property point tileCoords: mapItem.screenToTileCoords(mapRelativeCoords.x, mapRelativeCoords.y)
+//    readonly property point tileCoords: mapItem.screenToTileCoords(mapRelativeCoords.x, mapRelativeCoords.y)
 
     Tiled.MapLoader {
         id: mapLoader
@@ -44,24 +47,53 @@ Window {
                 containerAnimation.y = mapContainer.y
             }
 
-            Tiled.MapItem {
+//            Tiled.MapItem {
+//                id: mapItem
+//                map: mapLoader.map
+//                opacity: 0.2
+//                visibleArea: {
+//                    var scale = mapContainer.scale
+//                    Qt.rect(-mapContainer.x / scale,
+//                            -mapContainer.y / scale,
+//                            mapView.width / scale,
+//                            mapView.height / scale);
+//                }
+
+//                Rectangle {
+//                    id: player
+//                    width: 32
+//                    height: 32
+//                    color: "darkorange"
+//                    radius: width / 2
+//                    z: 100
+//                }
+//            }
+
+            Repeater {
                 id: mapItem
-                map: mapLoader.map
-                visibleArea: {
-                    var scale = mapContainer.scale
-                    Qt.rect(-mapContainer.x / scale,
-                            -mapContainer.y / scale,
-                            mapView.width / scale,
-                            mapView.height / scale);
+
+                onCountChanged: print("repeater count", count)
+
+                property rect visibleArea: model.visibleArea
+
+                model: TiledMapModel {
+                    map: mapLoader.map
+                    visibleArea: {
+                        var scale = mapContainer.scale
+                        Qt.rect(-mapContainer.x / scale,
+                                -mapContainer.y / scale,
+                                mapView.width / scale,
+                                mapView.height / scale);
+                    }
                 }
 
-                Rectangle {
-                    id: player
-                    width: 32
-                    height: 32
-                    color: "darkorange"
-                    radius: width / 2
-                    z: 100
+                delegate: Image {
+                    x: model.tileX
+                    y: model.tileY
+                    z: model.tileZ
+                    source: model.tileSpriteSource
+                    smooth: false
+                    visible: model.tileVisible
                 }
             }
         }
@@ -81,13 +113,13 @@ Window {
         id: singleFingerPanArea
         anchors.fill: parent
 
-        onClicked: {
-            var relativeToMapItem = singleFingerPanArea.mapToItem(mapItem, singleFingerPanArea.mouseX, singleFingerPanArea.mouseY)
-            var tileCoords = mapItem.screenToTileCoords(relativeToMapItem.x, relativeToMapItem.y)
-            var pixelCoords = mapItem.tileToScreenCoords(Math.floor(tileCoords.x) + 0.5, Math.floor(tileCoords.y) + 0.5)
-            player.x = pixelCoords.x - player.width / 2
-            player.y = pixelCoords.y - player.height / 2
-        }
+//        onClicked: {
+//            var relativeToMapItem = singleFingerPanArea.mapToItem(mapItem, singleFingerPanArea.mouseX, singleFingerPanArea.mouseY)
+//            var tileCoords = mapItem.screenToTileCoords(relativeToMapItem.x, relativeToMapItem.y)
+//            var pixelCoords = mapItem.tileToScreenCoords(Math.floor(tileCoords.x) + 0.5, Math.floor(tileCoords.y) + 0.5)
+//            player.x = pixelCoords.x - player.width / 2
+//            player.y = pixelCoords.y - player.height / 2
+//        }
 
         onDragged: {
             if (containerAnimation.running) {
